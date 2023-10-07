@@ -7,7 +7,12 @@ module.exports = app => {
         const {text, userId} = req.body;
         const resultQuery = await chatbot.textQuery(text, userId);
         console.log(resultQuery);
-        res.send("Text Query");
+        const resObj = {
+            intentName: resultQuery.intent.displayName,
+            userQuery: resultQuery.queryText,
+            fulfillmentText: resultQuery.fulfillmentText
+        }
+        res.send(resObj);
     })
 
 }
