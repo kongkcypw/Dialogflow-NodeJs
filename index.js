@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const PORT = 3000;
 const app = express();
 
@@ -12,13 +11,5 @@ app.get('/test', (req, res) => {
 }); 
 
 require('./routes/df-routes')(app);
-
-// const corsOption = {
-//     origin: 'https://localhost:3000'
-// }
-
-// app.options('*', cors(corsOption));
-
-// app.use(corsOption);
 
 app.listen(PORT, () => console.log(`Server is now listening on port ${PORT}`));
