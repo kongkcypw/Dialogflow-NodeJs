@@ -2,7 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
-const chatbot = require('./chatbot/chatbot')
+const chatbot = require('./chatbot/chatbot');
+const http = require("http");
+const { Server } = require("socket.io");
 
 // PORT configuration
 const PORT = 3200;
@@ -14,22 +16,45 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// Server and socket.io
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+    },
+});
+
 // BodyParser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Post request to endpoint
-app.post('/text_query', async(req, res) => {
-    console.log(req);
-    const {text, userId} = req.body;
-    const resultQuery = await chatbot.textQuery(text, userId);
-    console.log(resultQuery);
-    const resObj = {
+// Socket
+io.on("connection", (socket) => {
+    console.log(`User Connected: ${socket.id}`);
+
+    socket.on("join_chatbot", (chatbotID) => {
+        socket.join(chatbotID);
+        console.log(`User with ID: ${socket.id} joined room: ${chatbotID}`);
+    })
+
+    socket.on("send_message", async (data) => {
+        console.log(data);
+        // Detect intent 
+        const resultQuery = await chatbot.textQuery(data.message, data.userID);
+        const resObj = {
         intentName: resultQuery.intent.displayName,
-        userQuery: resultQuery.queryText,
-        fulfillmentText: resultQuery.fulfillmentText
-    }
-    res.send(resObj);
+        userInputText: resultQuery.queryText,
+        fulfillmentText: resultQuery.fulfillmentText,
+        chatbotID: data.chatbotID,
+        }
+        console.log(resObj)
+        socket.emit("receive_message", resObj);
+    })
+
+    socket.on("disconnect", () => {
+        console.log("User Disconnected", socket.id);
+    })
 })
 
-app.listen(PORT, () => console.log(`Server is now listening on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server is now listening on port ${PORT}`));
