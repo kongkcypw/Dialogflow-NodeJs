@@ -31,6 +31,12 @@ const textQuery = async(userText, userId) => {
     }
 }
 
+const specIntent = ["Nearby Store"];
+const intentType = async(intentName) => {
+    return (specIntent.includes(intentName))
+}
+
 module.exports = {
-    textQuery
+    textQuery,
+    intentType
 }

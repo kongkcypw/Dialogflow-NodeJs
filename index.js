@@ -42,11 +42,14 @@ io.on("connection", (socket) => {
         console.log(data);
         // Detect intent 
         const resultQuery = await chatbot.textQuery(data.message, data.userID);
+        const isIntentSpecific = await chatbot.intentType(resultQuery.intent.displayName);
         const resObj = {
         intentName: resultQuery.intent.displayName,
         userInputText: resultQuery.queryText,
         fulfillmentText: resultQuery.fulfillmentText,
         chatbotID: data.chatbotID,
+        isIntentSpecific: isIntentSpecific,
+        time: data.time,
         }
         console.log(resObj)
         socket.emit("receive_message", resObj);
