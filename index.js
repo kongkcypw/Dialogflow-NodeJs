@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
-const chatbot = require('./chatbot/chatbot');
+const chatbot = require('./chatbot/dialogflowQuery');
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -50,6 +50,8 @@ io.on("connection", (socket) => {
         chatbotID: data.chatbotID,
         isIntentSpecific: isIntentSpecific,
         time: data.time,
+        currentLatitude: data.currentLatitude,
+        currentLongitude: data.currentLongitude,
         }
         console.log(resObj)
         socket.emit("receive_message", resObj);

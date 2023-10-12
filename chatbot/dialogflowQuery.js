@@ -31,7 +31,9 @@ const textQuery = async(userText, userId) => {
     }
 }
 
-const specIntent = ["Nearby Store"];
+const specIntent = [
+    "Nearby Store", "Nearby Store - Open", "Nearby Store - All", "Promotion"
+];
 const intentType = async(intentName) => {
     return (specIntent.includes(intentName))
 }
